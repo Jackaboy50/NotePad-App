@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jackt\\Source\\Repos\\NotePad-App\\NotePad App\\NotePad App.csproj": {}
+    "C:\\Users\\jackt\\source\\repos\\NotePad-App\\NotePad App\\NotePad App.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jackt\\Source\\Repos\\NotePad-App\\NotePad App\\NotePad App.csproj": {
+    "C:\\Users\\jackt\\source\\repos\\NotePad-App\\NotePad App\\NotePad App.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jackt\\Source\\Repos\\NotePad-App\\NotePad App\\NotePad App.csproj",
+        "projectUniqueName": "C:\\Users\\jackt\\source\\repos\\NotePad-App\\NotePad App\\NotePad App.csproj",
         "projectName": "NotePad App",
-        "projectPath": "C:\\Users\\jackt\\Source\\Repos\\NotePad-App\\NotePad App\\NotePad App.csproj",
+        "projectPath": "C:\\Users\\jackt\\source\\repos\\NotePad-App\\NotePad App\\NotePad App.csproj",
         "packagesPath": "C:\\Users\\jackt\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jackt\\Source\\Repos\\NotePad-App\\NotePad App\\obj\\",
+        "outputPath": "C:\\Users\\jackt\\source\\repos\\NotePad-App\\NotePad App\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

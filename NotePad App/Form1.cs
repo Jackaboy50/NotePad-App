@@ -9,12 +9,12 @@ namespace NotePad_App
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            int[,] labelPoints = new int[,] { { 21, 35 }, { 21, 70 }, { 554, 41 } };
-            string[] labelText = new string[] { "Title:", "Text:", "List of Notes:" };
+            int[,] labelPoints = new int[,] { { 21, 35 }, { 21, 70 }, { 554, 41 } }; //Stores the points where the labels are located
+            string[] labelText = new string[] { "Title:", "Text:", "List of Notes:" };//Stores the text for each label
 
-            int[,] buttonPoints = new int[,] { { 70, 369 }, { 182, 369 }, { 562, 369 }, { 678, 369 } };
-            string[] buttonText = new string[] { "Save", "New", "Open", "Delete" };
-            for (int i = 0; i < 4; i++)
+            int[,] buttonPoints = new int[,] { { 70, 369 }, { 182, 369 }, { 562, 369 }, { 678, 369 } };// Stores the points where the buttons are located
+            string[] buttonText = new string[] { "Save", "New", "Open", "Delete" }; //Stores the button text
+            for (int i = 0; i < 4; i++) //For loop to create and add each button and label
             {
                 Button newbutton = new Button();
                 newbutton.Location = new Point(buttonPoints[i, 0], buttonPoints[i, 1]);
@@ -27,11 +27,12 @@ namespace NotePad_App
                     Label newLabel = new Label();
                     newLabel.Text = labelText[i];
                     newLabel.Location = new Point(labelPoints[i, 0], labelPoints[i, 1]);
-                    newLabel.Size = i == 2 ? new Size(100, 15) : new Size(38, 15);
+                    newLabel.Size = i == 2 ? new Size(100, 15) : new Size(38, 15); //Uses the i index to determine which label size to use
                     Controls.Add(newLabel);
                 }
             }
 
+            //Creates and adds remaining UI elements
             TextBox titleTextBox = new TextBox();
             titleTextBox.Location = new Point(70, 33);
             titleTextBox.Size = new Size(438, 23);
