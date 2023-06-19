@@ -1,10 +1,36 @@
+using System.Globalization;
+using System.Xml;
+
 namespace NotePad_App
 {
     public partial class Form1 : Form
     {
+        struct note
+        {
+            private static int _id = 1;
+            public note(string title, string text)
+            {
+                this.title = title;
+                this.text = text;
+                noteId = _id++;
+            }
+
+            public note(string title, string text, int noteId)
+            {
+                this.title = title;
+                this.text = text;
+                this.noteId = noteId;
+                _id = noteId + 1;
+            }
+            public int noteId { get; private set; }
+            public string title { get; set; }
+            public string text { get; set; }
+        }
+        List<note> notes = new List<note>();
         public Form1()
         {
             InitializeComponent();
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -20,6 +46,8 @@ namespace NotePad_App
                 newbutton.Location = new Point(buttonPoints[i, 0], buttonPoints[i, 1]);
                 newbutton.Size = new Size(84, 29);
                 newbutton.Text = buttonText[i];
+                newbutton.Name = buttonText[i];
+                newbutton.Click += new EventHandler(buttonPress);
                 Controls.Add(newbutton);
 
                 if (i < 3)
@@ -36,18 +64,114 @@ namespace NotePad_App
             TextBox titleTextBox = new TextBox();
             titleTextBox.Location = new Point(70, 33);
             titleTextBox.Size = new Size(438, 23);
+            titleTextBox.Name = "Box";
             Controls.Add(titleTextBox);
 
             TextBox textBox = new TextBox();
             textBox.Location = new Point(70, 68);
             textBox.Size = new Size(438, 290);
             textBox.Multiline = true;
+            textBox.Name = "Box";
             Controls.Add(textBox);
 
             ListBox noteListBox = new ListBox();
             noteListBox.Location = new Point(554, 70);
             noteListBox.Size = new Size(216, 289);
+            noteListBox.Name = "Box";
             Controls.Add(noteListBox);
+            //Each of these three has the Name property "Box" to be used as a search key in Controls.Find()
+
+            LoadNotesFromFile();
+            PopulateNoteList();
+        }
+
+        private void buttonPress(object sender, EventArgs e)
+        {
+            Button button = sender as Button;
+            if (button != null)
+            {
+                Control[] textBoxes = Controls.Find("Box", false);
+                ListBox tempList = textBoxes[2] as ListBox;
+                switch (button.Name)
+                {
+                    case "Save":
+                        string title = textBoxes[0].Text;
+                        string text = textBoxes[1].Text;
+
+                        tempList = textBoxes[2] as ListBox;
+                        tempList.Items.Add(title);
+                        textBoxes[2] = tempList;
+                        notes.Add(new note(title, text));
+                        WriteNotesToFile();
+                        break;
+
+                    case "New":
+                        textBoxes[0].Text = "";
+                        textBoxes[1].Text = "";
+                        break;
+
+                    case "Open":
+                        tempList = textBoxes[2] as ListBox;
+
+                        break;
+
+                    case "Delete":
+                        tempList = textBoxes[2] as ListBox;
+                        tempList.Items.Remove(tempList.SelectedItem);
+                        break;
+                }
+            }
+        }
+
+        private void WriteNotesToFile()
+        {
+            using (StreamWriter writer = new StreamWriter("noteData.txt"))
+            {
+                foreach(note noteToWrite in notes)
+                {
+                    writer.WriteLine($"#{noteToWrite.noteId}: {noteToWrite.title}");
+                    writer.WriteLine(noteToWrite.text);
+                }
+            }
+        }
+
+        private void LoadNotesFromFile()
+        {
+            string[] noteData;
+            using (StreamReader reader = new StreamReader("noteData.txt"))
+            {
+                List<string> data = new List<string>();
+                while (!reader.EndOfStream)
+                {
+                    data.Add(reader.ReadLine());
+                }
+                noteData = data.ToArray();
+            }
+
+            for(int i = 0; i < noteData.Length; i++)
+            {
+                int noteId = int.Parse(noteData[i][1].ToString());
+                string title = noteData[i].Substring(4);
+                string text = "";
+                while(i + 1 < noteData.Length && noteData[i + 1][0] != '#')
+                {
+                    text += $"{noteData[i + 1]}\r\n";
+                    i++;
+                }
+                notes.Add(new note(title, text, noteId));
+            }
+        }
+
+        private void PopulateNoteList()
+        {
+            Control[] textBoxes = Controls.Find("Box", false);
+            ListBox tempList = textBoxes[2] as ListBox;
+            foreach(note note in notes)
+            {
+                tempList = textBoxes[2] as ListBox;
+                tempList.Items.Add(note.title);
+            }
+            textBoxes[2] = tempList;
         }
     }
 }
