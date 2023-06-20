@@ -1,2 +1,4 @@
-#1: griddy 
-boi
+#1: number 1
+fax
+#2: number 2
+no printer

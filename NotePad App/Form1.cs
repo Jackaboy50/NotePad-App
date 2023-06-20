@@ -30,7 +30,6 @@ namespace NotePad_App
         public Form1()
         {
             InitializeComponent();
-            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -112,7 +111,13 @@ namespace NotePad_App
 
                     case "Open":
                         tempList = textBoxes[2] as ListBox;
-
+                        if(tempList.SelectedItem != null)
+                        {
+                            string selectedNote = tempList.SelectedItem.ToString();
+                            note note = GetNote(selectedNote);
+                            textBoxes[0].Text = note.title;
+                            textBoxes[1].Text = note.text;
+                        }
                         break;
 
                     case "Delete":
@@ -121,6 +126,18 @@ namespace NotePad_App
                         break;
                 }
             }
+        }
+
+        private note GetNote(string noteTitle)
+        {
+            foreach(note note in notes)
+            {
+                if(note.title == noteTitle)
+                {
+                    return note;
+                }
+            }
+            return new note();
         }
 
         private void WriteNotesToFile()
@@ -147,18 +164,29 @@ namespace NotePad_App
                 }
                 noteData = data.ToArray();
             }
-
             for(int i = 0; i < noteData.Length; i++)
             {
-                int noteId = int.Parse(noteData[i][1].ToString());
-                string title = noteData[i].Substring(4);
-                string text = "";
-                while(i + 1 < noteData.Length && noteData[i + 1][0] != '#')
+                if (noteData[i].Contains("#") && noteData[i].Contains(":"))
                 {
-                    text += $"{noteData[i + 1]}\r\n";
-                    i++;
+                    int noteId = int.Parse(noteData[i][1].ToString());
+                    string noteTitle = noteData[i].Substring(4);
+                    string text = "";
+                    while (i + 1 < noteData.Length && noteData[i + 1].Length > 0)
+                    {
+                        if (!noteData[i + 1].Contains("#") && !noteData[i + 1].Contains(":"))
+                        {
+                            text += $"{noteData[i + 1]}\r\n";
+                            i++;
+                        }
+                        else
+                        {
+                            i--;
+                            break;
+                        }
+                        
+                    }
+                    notes.Add(new note(noteTitle, text, noteId));
                 }
-                notes.Add(new note(title, text, noteId));
             }
         }
 
