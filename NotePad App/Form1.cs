@@ -5,16 +5,29 @@ namespace NotePad_App
 {
     public partial class Form1 : Form
     {
+        /// <summary>
+        /// Stores data about a note
+        /// </summary>
         struct Note
         {
             private static int _id = 1;
+            /// <summary>
+            /// Constructor that automatically assigns an ID
+            /// </summary>
+            /// <param name="title">Title of the note</param>
+            /// <param name="text">Text within the note</param>
             public Note(string title, string text)
             {
                 this.title = title;
                 this.text = text;
                 noteId = _id++;
             }
-
+            /// <summary>
+            /// Manual constructor
+            /// </summary>
+            /// <param name="title">Title of the note</param>
+            /// <param name="text">Text within the note</param>
+            /// <param name="noteId">ID of the note</param>
             public Note(string title, string text, int noteId)
             {
                 this.title = title;
@@ -31,7 +44,11 @@ namespace NotePad_App
         {
             InitializeComponent();
         }
-
+        /// <summary>
+        /// Called upon form load, creates form structure and handles stored notes
+        /// </summary>
+        /// <param name="sender">The form loades</param>
+        /// <param name="e">The event argument</param>
         private void Form1_Load(object sender, EventArgs e)
         {
             int[,] labelPoints = new int[,] { { 21, 35 }, { 21, 70 }, { 554, 41 } }; //Stores the points where the labels are located
@@ -83,7 +100,11 @@ namespace NotePad_App
             LoadNotesFromFile();
             PopulateNoteList();
         }
-
+        /// <summary>
+        /// Detects when an assigned button has been pressed
+        /// </summary>
+        /// <param name="sender">The button pressed</param>
+        /// <param name="e">The event argument</param>
         private void buttonPress(object sender, EventArgs e)
         {
             Button button = sender as Button;
@@ -139,7 +160,12 @@ namespace NotePad_App
                 }
             }
         }
-
+        /// <summary>
+        /// Searches for a potential note within the list
+        /// </summary>
+        /// <param name="noteTitle">Used to search for the note</param>
+        /// <param name="returnNote">Used to get the found note out of the method</param>
+        /// <returns>True or false depending on whether a note has been found</returns>
         private bool GetNote(string noteTitle, out Note returnNote)
         {
             returnNote = new Note();
@@ -153,7 +179,12 @@ namespace NotePad_App
             }
             return false;
         }
-
+        /// <summary>
+        /// Searches for a potential note within the list
+        /// </summary>
+        /// <param name="noteTitle">Used to search for the note</param>
+        /// <param name="noteId">Used to get the integer out of the method</param>
+        /// <returns>True or false depending on whether a note has been found</returns>
         private bool GetNoteID(string noteTitle, out int noteId)
         {
             noteId = -1;
@@ -167,6 +198,11 @@ namespace NotePad_App
             }
             return false;
         }
+        /// <summary>
+        /// Finds and updates a note within the list
+        /// </summary>
+        /// <param name="noteTitle">Used to search for the note</param>
+        /// <param name="update">Used as a replacement for the note</param>
         private void UpdateNote(string noteTitle, Note update)
         {
             for(int i = 0; i < notes.Count; i++)
@@ -177,6 +213,9 @@ namespace NotePad_App
                 }
             }
         }
+        /// <summary>
+        /// Iterates through the notes list and writes their data to the file
+        /// </summary>
         private void WriteNotesToFile()
         {
             using (StreamWriter writer = new StreamWriter("noteData.txt"))
@@ -188,6 +227,9 @@ namespace NotePad_App
                 }
             }
         }
+        /// <summary>
+        /// Uses StreamReader to read and parse notes into the notes List
+        /// </summary>
         private void LoadNotesFromFile()
         {
             string[] noteData;
@@ -224,6 +266,9 @@ namespace NotePad_App
                 }
             }
         }
+        /// <summary>
+        /// Populates the note list with all note titles
+        /// </summary>
         private void PopulateNoteList()
         {
             Control[] textBoxes = Controls.Find("Box", false);
