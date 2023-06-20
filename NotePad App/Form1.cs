@@ -5,17 +5,17 @@ namespace NotePad_App
 {
     public partial class Form1 : Form
     {
-        struct note
+        struct Note
         {
             private static int _id = 1;
-            public note(string title, string text)
+            public Note(string title, string text)
             {
                 this.title = title;
                 this.text = text;
                 noteId = _id++;
             }
 
-            public note(string title, string text, int noteId)
+            public Note(string title, string text, int noteId)
             {
                 this.title = title;
                 this.text = text;
@@ -26,7 +26,7 @@ namespace NotePad_App
             public string title { get; set; }
             public string text { get; set; }
         }
-        List<note> notes = new List<note>();
+        List<Note> notes = new List<Note>();
         public Form1()
         {
             InitializeComponent();
@@ -96,11 +96,18 @@ namespace NotePad_App
                     case "Save":
                         string title = textBoxes[0].Text;
                         string text = textBoxes[1].Text;
-
-                        tempList = textBoxes[2] as ListBox;
-                        tempList.Items.Add(title);
-                        textBoxes[2] = tempList;
-                        notes.Add(new note(title, text));
+                        if(GetNoteID(title, out int noteId) == true)
+                        {
+                            Note saveNote = new Note(title, text, noteId);
+                            UpdateNote(title, saveNote);
+                        }
+                        else
+                        {
+                            notes.Add(new Note(title, text));
+                            tempList = textBoxes[2] as ListBox;
+                            tempList.Items.Add(title);
+                            textBoxes[2] = tempList;
+                        }
                         WriteNotesToFile();
                         break;
 
@@ -114,44 +121,73 @@ namespace NotePad_App
                         if(tempList.SelectedItem != null)
                         {
                             string selectedNote = tempList.SelectedItem.ToString();
-                            note note = GetNote(selectedNote);
-                            textBoxes[0].Text = note.title;
-                            textBoxes[1].Text = note.text;
+                            Note openNote;
+                            GetNote(selectedNote, out openNote);
+                            textBoxes[0].Text = openNote.title;
+                            textBoxes[1].Text = openNote.text;
                         }
                         break;
 
                     case "Delete":
                         tempList = textBoxes[2] as ListBox;
+                        Note removeNote;
+                        GetNote(tempList.SelectedItem.ToString(), out removeNote);
+                        notes.Remove(removeNote);
                         tempList.Items.Remove(tempList.SelectedItem);
+                        WriteNotesToFile();
                         break;
                 }
             }
         }
 
-        private note GetNote(string noteTitle)
+        private bool GetNote(string noteTitle, out Note returnNote)
         {
-            foreach(note note in notes)
+            returnNote = new Note();
+            foreach(Note note in notes)
             {
                 if(note.title == noteTitle)
                 {
-                    return note;
+                    returnNote = note;
+                    return true;
                 }
             }
-            return new note();
+            return false;
         }
 
+        private bool GetNoteID(string noteTitle, out int noteId)
+        {
+            noteId = -1;
+            foreach (Note note in notes)
+            {
+                if (note.title == noteTitle)
+                {
+                    noteId = note.noteId;
+                    return true;
+                }
+            }
+            return false;
+        }
+        private void UpdateNote(string noteTitle, Note update)
+        {
+            for(int i = 0; i < notes.Count; i++)
+            {
+                if (notes[i].title == noteTitle)
+                {
+                    notes[i] = update;
+                }
+            }
+        }
         private void WriteNotesToFile()
         {
             using (StreamWriter writer = new StreamWriter("noteData.txt"))
             {
-                foreach(note noteToWrite in notes)
+                foreach(Note noteToWrite in notes)
                 {
                     writer.WriteLine($"#{noteToWrite.noteId}: {noteToWrite.title}");
                     writer.WriteLine(noteToWrite.text);
                 }
             }
         }
-
         private void LoadNotesFromFile()
         {
             string[] noteData;
@@ -183,18 +219,16 @@ namespace NotePad_App
                             i--;
                             break;
                         }
-                        
                     }
-                    notes.Add(new note(noteTitle, text, noteId));
+                    notes.Add(new Note(noteTitle, text, noteId));
                 }
             }
         }
-
         private void PopulateNoteList()
         {
             Control[] textBoxes = Controls.Find("Box", false);
             ListBox tempList = textBoxes[2] as ListBox;
-            foreach(note note in notes)
+            foreach(Note note in notes)
             {
                 tempList = textBoxes[2] as ListBox;
                 tempList.Items.Add(note.title);
