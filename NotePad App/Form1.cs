@@ -140,7 +140,11 @@ namespace NotePad_App
                 }
             }
         }
-
+        /// <summary>
+        /// Detects when an assigned ListBox has been double clicked
+        /// </summary>
+        /// <param name="sender">The ListBox pressed</param>
+        /// <param name="e">The event argument</param>
         private void ListBoxDoubleClick(object sender, EventArgs e)
         {
             ListBox listBox = sender as ListBox;
@@ -160,6 +164,10 @@ namespace NotePad_App
                 }
             }
         }
+        /// <summary>
+        /// Replaces a pre-existing note with an updated version
+        /// </summary>
+        /// <param name="textBoxes">Array containing the UI text boxes</param>
         private void SaveNote(Control[] textBoxes)
         {
             string title = textBoxes[0].Text;
@@ -184,6 +192,10 @@ namespace NotePad_App
                 }
             }
         }
+        /// <summary>
+        /// Allows the user to save a note to a chosen folder
+        /// </summary>
+        /// <param name="textBoxes">Array containing the UI text boxes</param>
         private void SaveNoteAs(Control[] textBoxes)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -198,7 +210,11 @@ namespace NotePad_App
                 }
             }
         }
-
+        /// <summary>
+        /// Populates the list box with txt files from a user chosen folder
+        /// </summary>
+        /// <param name="textBoxes">Array containing the UI text boxes</param>
+        /// <returns>A bool that determines whether a folder has been opened</returns>
         private bool OpenNoteFolder(Control[] textBoxes)
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
@@ -224,7 +240,10 @@ namespace NotePad_App
             textBoxes[2] = tempList;
             return true;
         }
-
+        /// <summary>
+        /// Removes a note from the list and deletes the file
+        /// </summary>
+        /// <param name="textBoxes">Array containing the UI text boxes</param>
         private void DeleteNote(Control[] textBoxes)
         {
             ListBox tempList = textBoxes[2] as ListBox;
