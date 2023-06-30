@@ -1,5 +1,8 @@
 using System.Globalization;
+using System.IO;
+using System.Windows.Forms;
 using System.Xml;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace NotePad_App
 {
@@ -40,6 +43,7 @@ namespace NotePad_App
             public string text { get; set; }
         }
         List<Note> notes = new List<Note>();
+        string noteSavePath = string.Empty;
         public Form1()
         {
             InitializeComponent();
@@ -51,19 +55,20 @@ namespace NotePad_App
         /// <param name="e">The event argument</param>
         private void Form1_Load(object sender, EventArgs e)
         {
+            Text = "NotePad";
             int[,] labelPoints = new int[,] { { 21, 35 }, { 21, 70 }, { 554, 41 } }; //Stores the points where the labels are located
             string[] labelText = new string[] { "Title:", "Text:", "List of Notes:" };//Stores the text for each label
 
-            int[,] buttonPoints = new int[,] { { 70, 369 }, { 182, 369 }, { 562, 369 }, { 678, 369 } };// Stores the points where the buttons are located
-            string[] buttonText = new string[] { "Save", "New", "Open", "Delete" }; //Stores the button text
-            for (int i = 0; i < 4; i++) //For loop to create and add each button and label
+            int[,] buttonPoints = new int[,] { { 70, 369 }, { 182, 369 }, { 294, 369 }, { 562, 369 }, { 678, 369 } };// Stores the points where the buttons are located
+            string[] buttonText = new string[] { "Save", "Save As", "New", "Open Folder", "Delete" }; //Stores the button text
+            for (int i = 0; i < 5; i++) //For loop to create and add each button and label
             {
                 Button newbutton = new Button();
                 newbutton.Location = new Point(buttonPoints[i, 0], buttonPoints[i, 1]);
                 newbutton.Size = new Size(84, 29);
                 newbutton.Text = buttonText[i];
                 newbutton.Name = buttonText[i];
-                newbutton.Click += new EventHandler(buttonPress);
+                newbutton.Click += new EventHandler(ButtonPress);
                 Controls.Add(newbutton);
 
                 if (i < 3)
@@ -94,18 +99,16 @@ namespace NotePad_App
             noteListBox.Location = new Point(554, 70);
             noteListBox.Size = new Size(216, 289);
             noteListBox.Name = "Box";
+            noteListBox.DoubleClick += new EventHandler(ListBoxDoubleClick);
             Controls.Add(noteListBox);
             //Each of these three has the Name property "Box" to be used as a search key in Controls.Find()
-
-            LoadNotesFromFile();
-            PopulateNoteList();
         }
         /// <summary>
         /// Detects when an assigned button has been pressed
         /// </summary>
         /// <param name="sender">The button pressed</param>
         /// <param name="e">The event argument</param>
-        private void buttonPress(object sender, EventArgs e)
+        private void ButtonPress(object sender, EventArgs e)
         {
             Button button = sender as Button;
             if (button != null)
@@ -115,170 +118,123 @@ namespace NotePad_App
                 switch (button.Name)
                 {
                     case "Save":
-                        string title = textBoxes[0].Text;
-                        string text = textBoxes[1].Text;
-                        if(GetNoteID(title, out int noteId) == true)
-                        {
-                            Note saveNote = new Note(title, text, noteId);
-                            UpdateNote(title, saveNote);
-                        }
-                        else
-                        {
-                            notes.Add(new Note(title, text));
-                            tempList = textBoxes[2] as ListBox;
-                            tempList.Items.Add(title);
-                            textBoxes[2] = tempList;
-                        }
-                        WriteNotesToFile();
+                        SaveNote(textBoxes);
+                        break;
+
+                    case "Save As":
+                        SaveNoteAs(textBoxes);
                         break;
 
                     case "New":
-                        textBoxes[0].Text = "";
-                        textBoxes[1].Text = "";
+                        textBoxes[0].Text = string.Empty;
+                        textBoxes[1].Text = string.Empty;
                         break;
 
-                    case "Open":
-                        tempList = textBoxes[2] as ListBox;
-                        if(tempList.SelectedItem != null)
-                        {
-                            string selectedNote = tempList.SelectedItem.ToString();
-                            Note openNote;
-                            GetNote(selectedNote, out openNote);
-                            textBoxes[0].Text = openNote.title;
-                            textBoxes[1].Text = openNote.text;
-                        }
+                    case "Open Folder":
+                        OpenNoteFolder(textBoxes);
                         break;
 
                     case "Delete":
-                        tempList = textBoxes[2] as ListBox;
-                        Note removeNote;
-                        GetNote(tempList.SelectedItem.ToString(), out removeNote);
-                        notes.Remove(removeNote);
-                        tempList.Items.Remove(tempList.SelectedItem);
-                        WriteNotesToFile();
+                        DeleteNote(textBoxes);
                         break;
                 }
             }
         }
-        /// <summary>
-        /// Searches for a potential note within the list
-        /// </summary>
-        /// <param name="noteTitle">Used to search for the note</param>
-        /// <param name="returnNote">Used to get the found note out of the method</param>
-        /// <returns>True or false depending on whether a note has been found</returns>
-        private bool GetNote(string noteTitle, out Note returnNote)
+
+        private void ListBoxDoubleClick(object sender, EventArgs e)
         {
-            returnNote = new Note();
-            foreach(Note note in notes)
+            ListBox listBox = sender as ListBox;
+            if(listBox != null)
             {
-                if(note.title == noteTitle)
+                Control[] textBoxes = Controls.Find("Box", false);
+                if (listBox.SelectedItem == null)
                 {
-                    returnNote = note;
-                    return true;
+                    return;
                 }
-            }
-            return false;
-        }
-        /// <summary>
-        /// Searches for a potential note within the list
-        /// </summary>
-        /// <param name="noteTitle">Used to search for the note</param>
-        /// <param name="noteId">Used to get the integer out of the method</param>
-        /// <returns>True or false depending on whether a note has been found</returns>
-        private bool GetNoteID(string noteTitle, out int noteId)
-        {
-            noteId = -1;
-            foreach (Note note in notes)
-            {
-                if (note.title == noteTitle)
+                string title = listBox.SelectedItem.ToString();
+                string[] noteData;
+                if (File.Exists($"{noteSavePath}\\{title}.txt"))
                 {
-                    noteId = note.noteId;
-                    return true;
-                }
-            }
-            return false;
-        }
-        /// <summary>
-        /// Finds and updates a note within the list
-        /// </summary>
-        /// <param name="noteTitle">Used to search for the note</param>
-        /// <param name="update">Used as a replacement for the note</param>
-        private void UpdateNote(string noteTitle, Note update)
-        {
-            for(int i = 0; i < notes.Count; i++)
-            {
-                if (notes[i].title == noteTitle)
-                {
-                    notes[i] = update;
+                    textBoxes[0].Text = title;
+                    textBoxes[1].Text = File.ReadAllText($"{noteSavePath}\\{title}.txt");
                 }
             }
         }
-        /// <summary>
-        /// Iterates through the notes list and writes their data to the file
-        /// </summary>
-        private void WriteNotesToFile()
+        private void SaveNote(Control[] textBoxes)
         {
-            using (StreamWriter writer = new StreamWriter("noteData.txt"))
+            string title = textBoxes[0].Text;
+            string text = textBoxes[1].Text;
+            bool saved = false;
+            if(noteSavePath == string.Empty && OpenNoteFolder(textBoxes))
             {
-                foreach(Note noteToWrite in notes)
+                foreach (string s in Directory.GetFiles(noteSavePath))
                 {
-                    writer.WriteLine($"#{noteToWrite.noteId}: {noteToWrite.title}");
-                    writer.WriteLine(noteToWrite.text);
-                }
-            }
-        }
-        /// <summary>
-        /// Uses StreamReader to read and parse notes into the notes List
-        /// </summary>
-        private void LoadNotesFromFile()
-        {
-            string[] noteData;
-            using (StreamReader reader = new StreamReader("noteData.txt"))
-            {
-                List<string> data = new List<string>();
-                while (!reader.EndOfStream)
-                {
-                    data.Add(reader.ReadLine());
-                }
-                noteData = data.ToArray();
-            }
-            for(int i = 0; i < noteData.Length; i++)
-            {
-                if (noteData[i].Contains("#") && noteData[i].Contains(":"))
-                {
-                    int noteId = int.Parse(noteData[i][1].ToString());
-                    string noteTitle = noteData[i].Substring(4);
-                    string text = "";
-                    while (i + 1 < noteData.Length && noteData[i + 1].Length > 0)
+                    FileInfo fileInfo = new FileInfo(s);
+                    Console.WriteLine(fileInfo.Name);
+                    if (fileInfo.Name.Substring(0, fileInfo.Name.Length - 4) == title)
                     {
-                        if (!noteData[i + 1].Contains("#") && !noteData[i + 1].Contains(":"))
-                        {
-                            text += $"{noteData[i + 1]}\r\n";
-                            i++;
-                        }
-                        else
-                        {
-                            i--;
-                            break;
-                        }
+                        File.WriteAllText(s, text);
+                        saved = true;
+                        break;
                     }
-                    notes.Add(new Note(noteTitle, text, noteId));
+                }
+                if (!saved)
+                {
+                    SaveNoteAs(textBoxes);
                 }
             }
         }
-        /// <summary>
-        /// Populates the note list with all note titles
-        /// </summary>
-        private void PopulateNoteList()
+        private void SaveNoteAs(Control[] textBoxes)
         {
-            Control[] textBoxes = Controls.Find("Box", false);
-            ListBox tempList = textBoxes[2] as ListBox;
-            foreach(Note note in notes)
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Text Files (*.txt)|*.txt";
+            saveFileDialog.DefaultExt = "txt";
+            saveFileDialog.FileName = textBoxes[0].Text;
+            if(saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                tempList = textBoxes[2] as ListBox;
-                tempList.Items.Add(note.title);
+                using (StreamWriter streamWriter = new StreamWriter(saveFileDialog.FileName))
+                {
+                    streamWriter.WriteLine(textBoxes[1].Text);
+                }
+            }
+        }
+
+        private bool OpenNoteFolder(Control[] textBoxes)
+        {
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            folderBrowserDialog.ShowNewFolderButton = true;
+            folderBrowserDialog.ShowDialog();
+            noteSavePath = folderBrowserDialog.SelectedPath;
+
+            ListBox tempList = textBoxes[2] as ListBox;
+            tempList.Items.Clear();
+            if(folderBrowserDialog.SelectedPath == string.Empty)
+            {
+                return false;
+            }
+            foreach (string s in Directory.GetFiles(folderBrowserDialog.SelectedPath))
+            {
+                FileInfo fileInfo = new FileInfo(s);
+                Console.WriteLine(fileInfo.Name);
+                if (fileInfo.Name.Contains(".txt"))
+                {
+                    tempList.Items.Add(fileInfo.Name.Substring(0, fileInfo.Name.Length - 4));
+                }
             }
             textBoxes[2] = tempList;
+            return true;
+        }
+
+        private void DeleteNote(Control[] textBoxes)
+        {
+            ListBox tempList = textBoxes[2] as ListBox;
+            if(tempList.SelectedItem == null)
+            {
+                return;
+            }
+            string title = tempList.SelectedItem.ToString();
+            tempList.Items.Remove(tempList.SelectedItem);
+            File.Delete($"{noteSavePath}\\{title}.txt");
         }
     }
 }

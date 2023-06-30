@@ -1,0 +1,17 @@
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\bin\Release\net6.0-windows\NotePad App.exe
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\bin\Release\net6.0-windows\NotePad App.deps.json
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\bin\Release\net6.0-windows\NotePad App.runtimeconfig.json
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\bin\Release\net6.0-windows\NotePad App.dll
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\bin\Release\net6.0-windows\NotePad App.pdb
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.csproj.AssemblyReference.cache
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad_App.Form1.resources
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.csproj.GenerateResource.cache
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.AssemblyInfoInputs.cache
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.AssemblyInfo.cs
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.csproj.CoreCompileInputs.cache
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.dll
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\refint\NotePad App.dll
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.pdb
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\NotePad App.genruntimeconfig.cache
+C:\Users\jackt\source\repos\NotePad-App\NotePad App\obj\Release\net6.0-windows\ref\NotePad App.dll

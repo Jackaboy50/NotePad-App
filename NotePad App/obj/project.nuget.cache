@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "zGZ189bsZYdqsgGs+aBuDEMxdhyvzI80hhRiG+f+vP/KqXAf2tb1CFd76LvkTyCDtmowwKubZ7jZR/AAQ3R/gA==",
+  "dgSpecHash": "tc9vrIYSyUik2p+PlrKYgdRWeKOBOLrnN2F0eVYsUD7mQc+wzUkdOGWPNMlz/agOU/EgKPyyKOu3qbOnoRTF3g==",
   "success": true,
   "projectFilePath": "C:\\Users\\jackt\\source\\repos\\NotePad-App\\NotePad App\\NotePad App.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\jackt\\.nuget\\packages\\microsoft-windowsapicodepack-core\\1.1.5\\microsoft-windowsapicodepack-core.1.1.5.nupkg.sha512"
+  ],
   "logs": []
 }
